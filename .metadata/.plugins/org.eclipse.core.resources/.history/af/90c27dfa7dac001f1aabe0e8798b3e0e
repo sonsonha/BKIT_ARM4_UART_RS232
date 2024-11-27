@@ -107,19 +107,21 @@ int validate_and_update_time(char *time_string) {
 }
 
 void process_uart_data() {
-    static char uart_buffer[16]; // Buffer to store received string
+    static char uart_buffer[16]; // Buffer to store the received time string
     static uint8_t buffer_index = 0;
     uint8_t data;
 
+    // Read data from the ring buffer
     while (ring_buffer_read(&data) == 0) {
-        if (data == '\n') { // End of response
+        // Check for end of time string ('\n')
+        if (data == '\n') {
             uart_buffer[buffer_index] = '\0'; // Null-terminate the string
             if (validate_and_update_time(uart_buffer)) {
                 uart_Rs232SendString("RTC Updated\n");
             } else {
                 uart_Rs232SendString("Invalid Time Format\n");
             }
-            buffer_index = 0; // Reset buffer
+            buffer_index = 0; // Reset buffer for next input
         } else if (buffer_index < sizeof(uart_buffer) - 1) {
             uart_buffer[buffer_index++] = data; // Append data to the buffer
         }
@@ -138,19 +140,6 @@ int8_t ring_buffer_read(uint8_t *data) {
 void system_init() {
     HAL_UART_Receive_IT(&huart1, &receive_buffer1, 1); // Start UART reception
     ds3231_Init(); // Initialize RTC
-}
-
-int wait_for_response() {
-    uint32_t start_time = HAL_GetTick();
-    uint8_t data;
-
-    while ((HAL_GetTick() - start_time) < TIMEOUT_MS) {
-        if (ring_buffer_read(&data) == 0) { // Check if data is available
-            return 1; // Response received
-        }
-    }
-
-    return 0; // Timeout
 }
 
 /* USER CODE END PV */
@@ -216,16 +205,11 @@ int main(void)
 	    while (!flag_timer2); // Wait for timer interrupt
 	    flag_timer2 = 0;
 
+	    // Scan buttons or other periodic tasks
 	    button_Scan();
 
-	    // Example: Trigger a request when Button 12 is pressed
-	    if (button_count[12] == 1) {
-	        if (!send_request_with_retries("Request Time\n")) {
-	            lcd_ShowStr(10, 50, "Error: Timeout", RED, BLACK, 16, 0);
-	        }
-	    }
-
-	    process_uart_data(); // Handle UART responses
+	    // Process received UART data
+	    process_uart_data();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

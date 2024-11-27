@@ -216,16 +216,11 @@ int main(void)
 	    while (!flag_timer2); // Wait for timer interrupt
 	    flag_timer2 = 0;
 
+	    // Scan buttons or other periodic tasks
 	    button_Scan();
 
-	    // Example: Trigger a request when Button 12 is pressed
-	    if (button_count[12] == 1) {
-	        if (!send_request_with_retries("Request Time\n")) {
-	            lcd_ShowStr(10, 50, "Error: Timeout", RED, BLACK, 16, 0);
-	        }
-	    }
-
-	    process_uart_data(); // Handle UART responses
+	    // Process received UART data
+	    process_uart_data();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
