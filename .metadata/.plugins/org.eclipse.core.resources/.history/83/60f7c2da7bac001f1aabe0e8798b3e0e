@@ -67,27 +67,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
-int validate_and_update_time(char *time_string) {
-    int hh, mm, ss;
-
-    // Parse the time string
-    if (sscanf(time_string, "%2d:%2d:%2d", &hh, &mm, &ss) != 3) {
-        return 0; // Parsing failed
-    }
-
-    // Validate time values
-    if (hh < 0 || hh >= 24 || mm < 0 || mm >= 60 || ss < 0 || ss >= 60) {
-        return 0; // Invalid time
-    }
-
-    // Update the RTC
-    ds3231_Write(ADDRESS_HOUR, DEC2BCD(hh));
-    ds3231_Write(ADDRESS_MIN, DEC2BCD(mm));
-    ds3231_Write(ADDRESS_SEC, DEC2BCD(ss));
-
-    return 1; // Success
-}
-
 void process_uart_data() {
     static char uart_buffer[16]; // Buffer to store the received time string
     static uint8_t buffer_index = 0;
@@ -121,7 +100,6 @@ int8_t ring_buffer_read(uint8_t *data) {
 
 void system_init() {
     HAL_UART_Receive_IT(&huart1, &receive_buffer1, 1); // Start UART reception
-    ds3231_Init(); // Initialize RTC
 }
 
 /* USER CODE END PV */

@@ -121,7 +121,6 @@ int8_t ring_buffer_read(uint8_t *data) {
 
 void system_init() {
     HAL_UART_Receive_IT(&huart1, &receive_buffer1, 1); // Start UART reception
-    ds3231_Init(); // Initialize RTC
 }
 
 /* USER CODE END PV */
