@@ -67,17 +67,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
-void process_uart_data() {
-    uint8_t data;
-    while (ring_buffer_read(&data) == 0) { // While there's data in the buffer
-        // Example: Echo received data back to UART
-        uart_Rs232SendChar(data);
-
-        // Additional processing can be added here (e.g., parsing commands)
-    }
-}
-
-
 int8_t ring_buffer_read(uint8_t *data) {
     if (head == tail) {
         return -1; // Buffer empty
@@ -87,9 +76,6 @@ int8_t ring_buffer_read(uint8_t *data) {
     return 0; // Success
 }
 
-void system_init() {
-    HAL_UART_Receive_IT(&huart1, &receive_buffer1, 1); // Start UART reception
-}
 
 /* USER CODE END PV */
 
@@ -151,14 +137,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	    while (!flag_timer2); // Wait for timer interrupt
-	    flag_timer2 = 0;
 
-	    // Scan buttons or other periodic tasks
-	    button_Scan();
-
-	    // Process received UART data
-	    process_uart_data();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

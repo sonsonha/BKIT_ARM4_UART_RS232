@@ -151,14 +151,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	    while (!flag_timer2); // Wait for timer interrupt
-	    flag_timer2 = 0;
 
-	    // Scan buttons or other periodic tasks
-	    button_Scan();
-
-	    // Process received UART data
-	    process_uart_data();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

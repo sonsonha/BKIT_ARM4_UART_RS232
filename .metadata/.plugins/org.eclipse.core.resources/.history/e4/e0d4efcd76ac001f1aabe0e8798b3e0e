@@ -53,43 +53,6 @@ UART_HandleTypeDef huart1;
 SRAM_HandleTypeDef hsram1;
 
 /* USER CODE BEGIN PV */
-#define BUFFER_SIZE 128
-
-volatile uint8_t ring_buffer[BUFFER_SIZE];
-volatile uint16_t head = 0;
-volatile uint16_t tail = 0;
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart->Instance == USART1) { // Check if this is USART1 interrupt
-        ring_buffer[head] = receive_buffer1; // Store received byte
-        head = (head + 1) % BUFFER_SIZE; // Update head index
-        HAL_UART_Receive_IT(&huart1, &receive_buffer1, 1); // Re-enable interrupt
-    }
-}
-
-void process_uart_data() {
-    uint8_t data;
-    while (ring_buffer_read(&data) == 0) { // While there's data in the buffer
-        // Example: Echo received data back to UART
-        uart_Rs232SendChar(data);
-
-        // Additional processing can be added here (e.g., parsing commands)
-    }
-}
-
-
-int8_t ring_buffer_read(uint8_t *data) {
-    if (head == tail) {
-        return -1; // Buffer empty
-    }
-    *data = ring_buffer[tail];
-    tail = (tail + 1) % BUFFER_SIZE; // Update tail index
-    return 0; // Success
-}
-
-void system_init() {
-    HAL_UART_Receive_IT(&huart1, &receive_buffer1, 1); // Start UART reception
-}
 
 /* USER CODE END PV */
 
@@ -151,14 +114,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	    while (!flag_timer2); // Wait for timer interrupt
-	    flag_timer2 = 0;
 
-	    // Scan buttons or other periodic tasks
-	    button_Scan();
-
-	    // Process received UART data
-	    process_uart_data();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

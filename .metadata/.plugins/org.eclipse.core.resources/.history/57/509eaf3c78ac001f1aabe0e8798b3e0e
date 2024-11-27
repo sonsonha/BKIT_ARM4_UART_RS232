@@ -87,9 +87,6 @@ int8_t ring_buffer_read(uint8_t *data) {
     return 0; // Success
 }
 
-void system_init() {
-    HAL_UART_Receive_IT(&huart1, &receive_buffer1, 1); // Start UART reception
-}
 
 /* USER CODE END PV */
 
@@ -151,14 +148,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	    while (!flag_timer2); // Wait for timer interrupt
-	    flag_timer2 = 0;
 
-	    // Scan buttons or other periodic tasks
-	    button_Scan();
-
-	    // Process received UART data
-	    process_uart_data();
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
